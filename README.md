@@ -47,6 +47,8 @@ infoMinds-app/
 │ ├── config/
 │ │ └── db.js
 │ └── index.js
+
+
 └── frontend/
 ├── src/
 │ ├── components/
