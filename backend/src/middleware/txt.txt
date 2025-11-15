@@ -1,0 +1,42 @@
+# Authentification, validation, gestion d’erreurs
+#Un middleware est une fonction qui s’exécute entre la requête (request) et la réponse (response).
+
+1 - Il peut modifier la requête, 
+vérifier des conditions, 
+ou arrêter la requête si quelque chose ne va pas.
+
+Syntaxe générale :
+
+function monMiddleware(req, res, next) {
+    // faire quelque chose
+    next(); // passe au middleware suivant ou à la route
+}
+
+2 - Qu’est-ce que l’authentification avec JWT ?
+JWT (JSON Web Token) : un jeton signé qui contient des informations
+ sur l’utilisateur (payload), par ex : id et email.
+
+Lorsqu’un utilisateur se connecte :
+Tu génères un token (jwt.sign(payload, secret, options)).
+Tu envoies ce token au client (Postman ou frontend).
+
+Pour accéder à des routes privées :
+Le client envoie le token dans l’en-tête HTTP Authorization: Bearer <token>.
+Le middleware vérifie le token avant d’autoriser l’accès.
+
+3 - Pourquoi utiliser un middleware JWT ?
+Sécurité : Empêche les utilisateurs non connectés d’accéder aux routes privées.
+Réutilisable : Tu peux protéger toutes les routes sensibles avec le même middleware.
+Centralisé : La logique d’authentification est dans un seul fichier, pas répétée dans chaque route.
+
+4. Fonctionnement fondamental résumé
+
+Le middleware intercepte la requête avant qu’elle n’atteigne la route.
+Il vérifie la présence et la validité du JWT.
+
+Si le token est valide :
+Récupère les infos de l’élève.
+Les attache à req.eleve.
+Passe à la route suivante avec next().
+Si le token est absent ou invalide :
+Renvoie 401 Unauthorized.
