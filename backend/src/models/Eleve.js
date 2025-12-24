@@ -4,10 +4,11 @@ const bcrypt = require('bcryptjs');
 
 const eleveSchema = new mongoose.Schema({
 
-    nom: { type: String, required: true },
-    prenom: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     motDePasse: { type: String, required: true },
+    nom: { type: String, required: true },
+    prenom: { type: String, required: true },
+    role : { type: String, enum: ['eleve', 'admin'], default: 'eleve' },
     dateInscription: { type: Date, default: Date.now },
 });
 

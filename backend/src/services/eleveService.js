@@ -41,15 +41,9 @@ class EleveService {
     }
   }
 
-  // Version alternative - Plus simple
-  async getTousLesEleves() {
-    const eleves = await Eleve.find().select('-motDePasse');
-    return eleves;
-  }
-
-  // Inscription  métier 
+  // Inscription   
   async inscrireEleve(donneesInscription) {
-    const { nom, prenom, email, motDePasse } = donneesInscription;
+    const { nom, prenom, email, motDePasse,role } = donneesInscription;
 
     // Vérifier si l'email existe
     const existe = await Eleve.findOne({ email });
@@ -58,15 +52,16 @@ class EleveService {
     }
 
     // Créer l'élève
-    const nouvelEleve = new Eleve({ nom, prenom, email, motDePasse });
+    const nouvelEleve = new Eleve({ email, motDePasse, nom, prenom, role });
     await nouvelEleve.save();
 
     return {
       message: "Élève inscrit avec succès 🎓",
       eleve: {
+        email: nouvelEleve.email,
         nom: nouvelEleve.nom,
         prenom: nouvelEleve.prenom,
-        email: nouvelEleve.email,
+        role: nouvelEleve.role,
         dateInscription: nouvelEleve.dateInscription
       }
     };

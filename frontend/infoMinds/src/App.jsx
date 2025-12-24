@@ -3,19 +3,25 @@ import InscriptionEleve from './components/InscriptionEleve';
 import ListeEleves from './components/ListeEleves';
 import './App.css';
 import ListeEvents from './components/ListeEvents';
+import LoginForm from './components/LoginForm';
+
+
+
+
 
 function App() {
   const [activeView, setActiveView] = useState('inscription');
 
   return (
+    
     <div className="App">
       <header style={{
-        backgroundColor: '#F9B487',
+        backgroundColor: '#ff6b63',
         color: 'white',
         padding: '1rem',
         marginBottom: '2rem'
       }}>
-        <h1> InfoMinds - Gestion des Élèves</h1>
+        <h1> InfoMinds - Gestion des Eleves</h1>
         <nav style={{ marginTop: '1rem' }}>
           <button 
             onClick={() => setActiveView('inscription')}
@@ -30,6 +36,19 @@ function App() {
             }}
           >
             Inscrire un Élève
+          </button>
+          <button 
+            onClick={() => setActiveView('LoginForm')}
+            style={{
+              padding: '10px 25px',
+              backgroundColor: activeView === 'LoginForm' ? '#427A76' : '#174143',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            LoginForm
           </button>
           <button 
             onClick={() => setActiveView('liste')}
@@ -58,6 +77,7 @@ function App() {
             Liste des Événements
           </button>
           
+          
         </nav>
       </header>
 
@@ -65,6 +85,7 @@ function App() {
         {activeView === 'inscription' && <InscriptionEleve />}
         {activeView === 'liste' && <ListeEleves />}
         {activeView === 'events' && <ListeEvents />}
+        {activeView === 'LoginForm' && <LoginForm />}
       </main>
     </div>
   );
