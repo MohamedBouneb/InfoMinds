@@ -56,7 +56,7 @@ class EleveService {
     await nouvelEleve.save();
 
     return {
-      message: "Élève inscrit avec succès 🎓",
+      message: "Inscription avec succès 🎓",
       eleve: {
         email: nouvelEleve.email,
         nom: nouvelEleve.nom,
