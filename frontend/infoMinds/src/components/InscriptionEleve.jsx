@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { eleveService } from '../services/eleveService';
 
 const InscriptionEleve = () => {
+  
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
