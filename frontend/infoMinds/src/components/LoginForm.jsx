@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -7,127 +7,143 @@ import {
   Typography,
   Paper,
   Link,
-  Alert,
   InputAdornment,
-  IconButton
-} from '@mui/material';
-import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
+  IconButton,
+  Alert,
+} from "@mui/material";
+import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Données de connexion:', formData);
-    
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await axios.post("http://localhost:5000/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.user.role);
+
+      if (res.data.user.role === "admin") navigate("/admin");
+      else navigate("/eleve");
+    } catch (err) {
+      console.error(err);
+      setError("Email ou mot de passe incorrect");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Container component="main" maxWidth="sm">
-      <Box
+    <Container maxWidth="md" sx={{ mt: 5 }}>
+      <Paper
+        elevation={6}
         sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          borderRadius: 3,
+          overflow: "hidden",
         }}
       >
-        <Paper
-          elevation={8}
+        {/* Partie gauche */}
+        <Box
           sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-            borderRadius: 2
+            flex: 1,
+            backgroundColor: "#ff6b63",
+            color: "white",
+            p: 5,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {/* Logo ou icône */}
-          <Box
-            sx={{
-              backgroundColor: 'primary.main',
-              color: 'white',
-              width: 60,
-              height: 60,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 2
-            }}
-          >
-            <Lock fontSize="large" />
-          </Box>
+          <Typography variant="h3" sx={{ mb: 2 }}>
+            Gestion académique
+          </Typography>
+          <Typography sx={{ opacity: 0.8, textAlign: "center" }}>
+            INFOMINDS, club d'informatique et de robotique pour des événements et des ateliers éducatifs.
+          </Typography>
+        </Box>
 
-          <Typography component="h1" variant="h4" gutterBottom>
-            Connexion
+        {/* Partie droite */}
+        <Box
+          sx={{
+            flex: 1.5,
+            p: 5,
+            backgroundColor: "#f5e9e6",
+          }}
+        >
+          <Typography variant="h5" sx={{ mb: 3 }}>
+            Bienvenue sur InfoMinds, connectez-vous pour continuer.
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Bienvenue sur InfoMinds
-          </Typography>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+          <Box component="form" onSubmit={handleSubmit}>
             <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Adresse email"
+              label="Email"
               name="email"
-              autoComplete="email"
-              autoFocus
+              type="email"
               value={formData.email}
               onChange={handleChange}
+              fullWidth
+              required
+              sx={{ mb: 2 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Email color="action" />
+                    <Email />
                   </InputAdornment>
                 ),
               }}
             />
 
             <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
               label="Mot de passe"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              autoComplete="current-password"
+              name="password"
+              type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleChange}
+              fullWidth
+              required
+              sx={{ mb: 3 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Lock color="action" />
+                    <Lock />
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                    >
+                    <IconButton onClick={handleClickShowPassword} edge="end">
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -137,22 +153,22 @@ const LoginForm = () => {
 
             <Button
               type="submit"
-              fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
-              size="large"
+              color="primary"
+              fullWidth
+              disabled={loading}
             >
-              Se connecter
+              {loading ? "Connexion..." : "Se connecter"}
             </Button>
 
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box sx={{ textAlign: "center", mt: 3 }}>
               <Link href="/signup" variant="body2">
-                {"Pas de compte ? S'inscrire"}
+                Pas de compte ? S'inscrire
               </Link>
             </Box>
           </Box>
-        </Paper>
-      </Box>
+        </Box>
+      </Paper>
     </Container>
   );
 };

@@ -1,8 +1,6 @@
 
 const eleveService = require('../services/eleveService');
 
-
-
 exports.getEleveByNom = async (req, res) => {
   try {
     const { nom } = req.params; // Récupère le nom depuis l'URL

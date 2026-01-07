@@ -7,6 +7,7 @@ router.get('/recherche/:nom', getEleveByNom);
 router.get('/', getAllEleves);
 router.post('/inscription', inscrireEleve);
 
+
 router.post('/login', loginEleve);
 
 module.exports = router;
