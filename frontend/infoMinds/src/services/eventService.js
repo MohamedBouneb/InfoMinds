@@ -1,4 +1,4 @@
-const API_URL_EVENTS = 'http://localhost:3000/api/events';
+const API_URL_EVENTS = 'http://localhost:5000/api/events';
 
 export const eventService = {
   // Récupérer tous les événements

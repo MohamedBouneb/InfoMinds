@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Import nécessaire
 import {
   Box,
   Container,
@@ -12,44 +13,56 @@ import {
   Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
-
+  const navigate = useNavigate(); // ✅ Initialisation ici
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Gestion des champs
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Afficher / cacher mot de passe
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  // Soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/eleves/login",
+        {
+          email: formData.email,
+          motDePasse: formData.password,
+        }
+      );
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.user.role);
+      // Stockage token et user
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.eleve));
 
-      if (res.data.user.role === "admin") navigate("/admin");
-      else navigate("/eleve");
+      // Redirection selon rôle
+      const role = response.data.eleve.role;
+      if (role === "admin") navigate("/admin"); // Admin → /admin
+      else navigate("/home"); // Élève → /home
+
+      setSuccess("Connexion réussie ✅ Bienvenue !");
     } catch (err) {
       console.error(err);
       setError("Email ou mot de passe incorrect");
@@ -85,7 +98,8 @@ const LoginForm = () => {
             Gestion académique
           </Typography>
           <Typography sx={{ opacity: 0.8, textAlign: "center" }}>
-            INFOMINDS, club d'informatique et de robotique pour des événements et des ateliers éducatifs.
+            INFOMINDS, club d'informatique et de robotique pour des événements et
+            des ateliers éducatifs.
           </Typography>
         </Box>
 
@@ -101,9 +115,17 @@ const LoginForm = () => {
             Bienvenue sur InfoMinds, connectez-vous pour continuer.
           </Typography>
 
+          {/* Message d'erreur */}
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
+            </Alert>
+          )}
+
+          {/* Message de succès */}
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
             </Alert>
           )}
 
@@ -154,7 +176,6 @@ const LoginForm = () => {
             <Button
               type="submit"
               variant="contained"
-              color="primary"
               fullWidth
               disabled={loading}
             >
@@ -162,7 +183,7 @@ const LoginForm = () => {
             </Button>
 
             <Box sx={{ textAlign: "center", mt: 3 }}>
-              <Link href="/signup" variant="body2">
+              <Link href="/inscription" variant="body2">
                 Pas de compte ? S'inscrire
               </Link>
             </Box>
