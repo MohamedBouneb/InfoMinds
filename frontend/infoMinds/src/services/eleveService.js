@@ -1,55 +1,68 @@
+import axios from "axios";
 
-
-const API_URL = 'http://localhost:3000/api/eleves';
+const API_URL = "http://localhost:5000/api/eleves";
 
 export const eleveService = {
 
+  // 🔍 Recherche d'élèves par nom
   async searchElevesByName(nom) {
-    const response = await fetch(`${API_URL}/recherche/${encodeURIComponent(nom)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!response.ok) {
-      throw new Error('Erreur lors de la recherche des élèves');
+    try {
+      const response = await axios.get(
+        `${API_URL}/recherche/${encodeURIComponent(nom)}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erreur lors de la recherche des élèves", error);
+      throw new Error("Erreur lors de la recherche des élèves");
     }
-    return await response.json();
   },
 
-  
-
-  // Inscrire un nouvel élève
+  // 📝 Inscription d'un nouvel élève
   async inscrireEleve(eleveData) {
-    const response = await fetch(`${API_URL}/inscription`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(eleveData),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message);
+    try {
+      const response = await axios.post(
+        `${API_URL}/inscription`,
+        eleveData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Erreur lors de l'inscription de l'élève";
+      throw new Error(message);
     }
-    
-    return await response.json();
   },
 
-  // Récupérer la liste des élèves
+  // 📋 Récupérer la liste des élèves
   async getEleves() {
-    const response = await fetch(`${API_URL}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error('Erreur lors de la récupération des élèves');
+    try {
+      const response = await axios.get(API_URL);
+      return response.data;
+    } catch (error) {
+      throw new Error("Erreur lors de la récupération des élèves");
     }
-    
-    return await response.json();
+  },
+
+  // 🔐 Connexion d'un élève
+  async loginEleve(credentials) {
+    try {
+      const response = await axios.post(
+        `${API_URL}/login`,
+        credentials,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      // Exemple si tu reçois un token JWT
+      // localStorage.setItem("eleveToken", response.data.token);
+
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Erreur lors de la connexion";
+      console.error("Login failed:", message);
+      throw new Error(message);
+    }
   }
 };

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 🔹 Importer useNavigate
 import {
   Box,
   Container,
@@ -12,6 +13,7 @@ import {
 import { eleveService } from "../services/eleveService";
 
 const InscriptionEleve = () => {
+  const navigate = useNavigate(); // 🔹 Déclarer navigate
   const [formData, setFormData] = useState({
     nom: "",
     prenom: "",
@@ -33,8 +35,11 @@ const InscriptionEleve = () => {
     setMessage("");
 
     try {
-      const result = await eleveService.inscrireEleve(formData);
-      setMessage(result.message);
+      await eleveService.inscrireEleve(formData);
+  
+      setMessage("Inscription réussie ✅ Vous pouvez maintenant vous connecter !");
+      
+      //Réinitialiser le formulaire
       setFormData({
         nom: "",
         prenom: "",
@@ -42,6 +47,12 @@ const InscriptionEleve = () => {
         motDePasse: "",
         role: "",
       });
+
+      // Redirection automatique vers login après 2 secondes
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+
     } catch (error) {
       setMessage(`Erreur: ${error.message}`);
     } finally {
@@ -82,7 +93,7 @@ const InscriptionEleve = () => {
           }}
         >
           <Typography variant="h5" sx={{ mb: 3 }}>
-            Bienvenue à mes élèves et à mes administrateurs, rejoignez notre équipe.
+            Bienvenue à nos élèves et administrateurs, rejoignez notre équipe.
           </Typography>
 
           {message && (
